@@ -20,4 +20,6 @@ import numpy as np
 test = Image.open("../../CelebA/Img/img_align_celeba/000001.jpg")
 img_array = np.asarray(test)
 
+test.show()
+
 #"../../CelebA/Anno/list_attr_celeba.txt"
