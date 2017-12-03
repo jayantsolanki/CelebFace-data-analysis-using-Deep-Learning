@@ -4,7 +4,7 @@ import PIL.ImageOps
 from PIL import Image
 from sklearn import preprocessing
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 
 def dataloader(imagespath,filename):
 	count = 0;
@@ -44,7 +44,10 @@ def dataloader(imagespath,filename):
 			listValues = list(filter(None, listValues))#use this function only for python3
 			listValues[-1] = listValues[-1].strip()
 			imageNames[count-3] = listValues[0]#store the filename
-			labels[count-3,0] = int(listValues[16])##store the eyeglasses param
+			if(int(listValues[16])==1):
+				labels[count-3,0] = 1##store the eyeglasses param
+			else:
+				labels[count-3,0] = 0##store the eyeglasses param
 
 			#getting individual image data
 			imagesPath = imagespath+imageNames[count-3]#full image path

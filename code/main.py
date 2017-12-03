@@ -9,7 +9,7 @@ from PIL import Image
 from sklearn import preprocessing
 import numpy as np
 from libs import *
-import tensorflow as tf
+# import tensorflow as tf
 
 length = 0;
 labelnames = np.zeros(41)
