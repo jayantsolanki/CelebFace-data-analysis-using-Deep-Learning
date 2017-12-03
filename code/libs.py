@@ -29,7 +29,8 @@ def dataloader(imagespath,filename):
 		#178x218
 		# imageNames = np.array((length,1), dtype=object)
 		imageNames = ["" for x in range(length)]
-		imageData = np.zeros((100001,218,178,3), dtype=np.uint8)
+		imageData = np.zeros((100001,55,45,3), dtype=np.uint8)
+		# imageData = np.zeros((100001,218,178,3), dtype=np.uint8)
 		count = 0
 		print('....')
 		for line in open(filename):
@@ -50,7 +51,7 @@ def dataloader(imagespath,filename):
 			# new_image = make_square(test_image)
 			# image = new_image.convert('L')
 			# image = PIL.ImageOps.invert(image)
-			# image = test_image.resize((28, 28), Image.BICUBIC)
+			image = image.resize((45, 55), Image.BICUBIC)
 			img_array = np.asarray(image)
 			imageData[count-3,:,:,:] = img_array
 			# if(listValues[16]=='1'):
