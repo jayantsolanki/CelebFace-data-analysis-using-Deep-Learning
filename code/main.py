@@ -15,7 +15,11 @@ labelnames = np.zeros(41)
 filename = '../data/CelebA/Anno/list_attr_celeba.txt'
 imagepath = '../data/CelebA/Img/img_align_celeba/'
 celebData = 0
-(labelnames) = dataloader(imagepath, filename)
+(celebData, labels, imageNames) = dataloader(imagepath, filename)
+print("Celebdata dimension is ", celebData.shape)
+print("labels dimension is ", labels.shape)
+print("imageNames dimension is ", imageNames.shape)
+
 #eyglasses at column 15+1
 #Extract data
 
@@ -24,8 +28,8 @@ celebData = 0
 
 
 
-# test = Image.open("../data/CelebA/Img/img_align_celeba/000001.jpg")
-# img_array = np.asarray(test)
-# test.show()
+test = Image.open("../data/CelebA/Img/img_align_celeba/"+imageNames[52])
+img_array = np.asarray(test)
+test.show()
 
 #"../../CelebA/Anno/list_attr_celeba.txt"
