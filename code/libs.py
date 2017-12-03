@@ -4,6 +4,7 @@ import PIL.ImageOps
 from PIL import Image
 from sklearn import preprocessing
 import numpy as np
+import tensorflow as tf
 
 def dataloader(imagespath,filename):
 	count = 0;
@@ -77,13 +78,13 @@ def dataloader(imagespath,filename):
 	# # imagespath = imagespath+imageNames[0]
 	return(imageData, labels, imageNames)
 
-def create_cnn_model():
+def create_cnn_model(x, actual_y, no_drop_prob):
 	#Intialization of weights and bias
-	W1 = weight_init([5, 5, 1, 32])
+	W1 = weight_init([5, 5, 3, 32])
 	bias1 = bias_init([32])
 
 	#reshape data into 4d
-	x_4d = tf.reshape(x, [-1, 28, 28, 1])
+	x_4d = tf.reshape(x, [-1, 45, 55, 3])
 
 	#convolve the image, add bias, apply relu activation function
 	conv1_output = tf.nn.relu(convolution(x_4d, W1) + bias1)
@@ -113,16 +114,15 @@ def create_cnn_model():
 
 	fc1_output = tf.nn.relu(tf.matmul(pool2_flat, W_fc) + bias_fc)
 
-	#dropout only during training to prevent overfitting, not during testing
-	no_drop_prob = tf.placeholder(tf.float32)  #probability of not dropping out the neurons output
-
 	fc1_output_drop = tf.nn.dropout(fc1_output, no_drop_prob)
 
 	#------------Logit Layer--------------
-	W_logit = weight_init([1024, 10])
-	bias_logit = bias_init([10])
+	W_logit = weight_init([1024, 2])
+	bias_logit = bias_init([2])
 
 	logit_output = tf.matmul(fc1_output_drop, W_logit) + bias_logit
+
+	return logit_output
 
 
 #Weight Variable initialization
