@@ -1,2 +1,3 @@
-data/CelebA
+data/
+data
 code/CelebA.npz
