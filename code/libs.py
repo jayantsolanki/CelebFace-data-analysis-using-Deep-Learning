@@ -4,7 +4,7 @@ import PIL.ImageOps
 from PIL import Image
 from sklearn import preprocessing
 import numpy as np
-# import tensorflow as tf
+import tensorflow as tf
 
 def dataloader(imagespath,filename):
 	count = 0;
@@ -30,7 +30,8 @@ def dataloader(imagespath,filename):
 		#178x218
 		# imageNames = np.array((length,1), dtype=object)
 		imageNames = ["" for x in range(length)]
-		imageData = np.zeros((100001,55,45,3), dtype=np.uint8)
+		# imageData = np.zeros((100001,55,45,3), dtype=np.uint8)
+		imageData = np.zeros((100001,28,28), dtype=np.uint8)
 		# imageData = np.zeros((100001,218,178,3), dtype=np.uint8)
 		count = 0
 		print('....')
@@ -53,11 +54,12 @@ def dataloader(imagespath,filename):
 			imagesPath = imagespath+imageNames[count-3]#full image path
 			image = Image.open(imagesPath)
 			# new_image = make_square(test_image)
-			# image = new_image.convert('L')
+			image = image.convert('L')
 			# image = PIL.ImageOps.invert(image)
-			image = image.resize((45, 55), Image.BICUBIC)
+			image = image.resize((28, 28), Image.BICUBIC)
 			img_array = np.asarray(image)
-			imageData[count-3,:,:,:] = img_array
+			# imageData[count-3,:,:,:] = img_array
+			imageData[count-3,:,:] = img_array
 			# if(listValues[16]=='1'):
 			# 	print(listValues[0])
 			# 	print(labelnames[16])
@@ -83,30 +85,29 @@ def dataloader(imagespath,filename):
 
 def create_cnn_model(x, actual_y, no_drop_prob):
 	#Intialization of weights and bias
-	W1 = weight_init([5, 5, 3, 32])
+	W1 = weight_init([5, 5, 1, 32])
 	bias1 = bias_init([32])
 
 	#reshape data into 4d
-	x_4d = tf.reshape(x, [-1, 45, 55, 3])
+	x_4d = tf.reshape(x, [-1, 28, 28, 1])
 
 	#convolve the image, add bias, apply relu activation function
 	conv1_output = tf.nn.relu(convolution(x_4d, W1) + bias1)
-
+	print("con layer 1 max pool before")
 	#apply max pooling
 	pool1_output = maxpool(conv1_output)
-
+	print("con layer 1 max pool done")
 	#-----------Convolution layer 2 with 64 features applied on 5x5 patch of image-----------
-
 	#Intialization of weights and bias
 	W2 = weight_init([5, 5, 32, 64])
 	bias2 = bias_init([64])
 
 	#convolve the layer 1 output, add bias, apply relu activation function
 	conv2_output = tf.nn.relu(convolution(pool1_output, W2) + bias2)
-
+	
 	#apply max pooling
 	pool2_output = maxpool(conv2_output)
-
+	print("con layer 2 max pool done")
 	#------------Fully Connected Layer with 1024 neurons--------------
 	#Intialization of weights and bias
 	W_fc = weight_init([7*7*64, 1024])
@@ -118,11 +119,11 @@ def create_cnn_model(x, actual_y, no_drop_prob):
 	fc1_output = tf.nn.relu(tf.matmul(pool2_flat, W_fc) + bias_fc)
 
 	fc1_output_drop = tf.nn.dropout(fc1_output, no_drop_prob)
-
+	print("FC layer done")
 	#------------Logit Layer--------------
 	W_logit = weight_init([1024, 2])
 	bias_logit = bias_init([2])
-
+	print("before logit")
 	logit_output = tf.matmul(fc1_output_drop, W_logit) + bias_logit
 
 	return logit_output
