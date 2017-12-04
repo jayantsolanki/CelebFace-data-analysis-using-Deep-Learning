@@ -34,31 +34,33 @@ print("imageNames dimension is ", imageNames.shape)
 # test_images = test_images.reshape([5000,2475*3])
 
 # view_image(normalized_X[9999,:,:], train_images_label[9999])
-trains_images = celebData[0:1000,:,:]#getting the training sets
-test_images = celebData[1000:1100,:,:]#getting the training sets
-train_images_labels = labels[0:1000,:]
-test_images_labels = labels[1000:1100,:]
+train_num = 50000
+test_num = 10000
+trains_images = celebData[0:train_num,:,:]#getting the training sets
+test_images = celebData[train_num:train_num+test_num,:,:]#getting the training sets
+train_images_labels = labels[0:train_num,:]
+test_images_labels = labels[train_num:train_num+test_num,:]
 # trains_images = trains_images.reshape([20000,2475*3])#flattening the input array
-trains_images = trains_images.reshape([1000,784])#flattening the input array
-test_images = test_images.reshape([100,784])
+trains_images = trains_images.reshape([train_num,784])#flattening the input array
+test_images = test_images.reshape([test_num,784])
 
 trains_images = preprocessing.scale(trains_images)#standardising the image data set with zero mean and unit standard deviation
 test_images = preprocessing.scale(test_images)
 
-train_images_labels_mat = np.zeros((1000, 2), dtype=np.uint8)
-train_images_labels_mat[np.arange(1000), train_images_labels.T] = 1
+train_images_labels_mat = np.zeros((train_num, 2), dtype=np.uint8)
+train_images_labels_mat[np.arange(train_num), train_images_labels.T] = 1
 train_images_labels = train_images_labels_mat
 print(train_images_labels[51,:])
 
-test_images_labels_mat = np.zeros((100, 2), dtype=np.uint8)
-test_images_labels_mat[np.arange(100), test_images_labels.T] = 1
+test_images_labels_mat = np.zeros((test_num, 2), dtype=np.uint8)
+test_images_labels_mat[np.arange(test_num), test_images_labels.T] = 1
 test_images_labels = test_images_labels_mat
 
 print("Train images shape: ", trains_images.shape)
 print("Train labels shape: ", train_images_labels.shape)
 print("Test images shape: ", test_images.shape)
 print("Test labels shape: ", test_images_labels.shape)
-
+exit()
 #eyglasses at column 15+1
 #Extract data
 
@@ -95,7 +97,7 @@ with tf.Session() as sess:
 	for i in range(100):
 		# for j in range(50):
 		# 	 = trains_images[:j,:]
-		print(i)
+		# print(i)
 		if i%100 == 0:
 			train_accuracy = accuracy.eval(feed_dict={x: trains_images, actual_y: train_images_labels, no_drop_prob: 1.0})
 			print("At step %d, training accuracy: %.2f" %(i, train_accuracy))
