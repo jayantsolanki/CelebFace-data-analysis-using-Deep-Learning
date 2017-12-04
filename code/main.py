@@ -60,7 +60,7 @@ print("Train images shape: ", trains_images.shape)
 print("Train labels shape: ", train_images_labels.shape)
 print("Test images shape: ", test_images.shape)
 print("Test labels shape: ", test_images_labels.shape)
-exit()
+# exit()
 #eyglasses at column 15+1
 #Extract data
 
