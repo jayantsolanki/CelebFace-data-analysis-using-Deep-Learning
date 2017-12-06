@@ -35,9 +35,9 @@ print("imageNames dimension is ", imageNames.shape)
 # test_images = test_images.reshape([5000,2475*3])
 
 # view_image(normalized_X[9999,:,:], train_images_label[9999])
-train_num = 56000 #80% of 70000
-val_num = 7000
-test_num = 7000
+train_num = 50400 #80% of 70000
+val_num = 5600
+test_num = 14000
 
 trains_images = celebData[0:train_num,:,:]#getting the training sets
 train_images_labels = labels[0:train_num,:]
@@ -90,7 +90,7 @@ def cnn_model_fn(features, labels, mode):
   """Model function for CNN."""
   # Input Layer
   # Reshape X to 4-D tensor: [batch_size, width, height, channels]
-  # MNIST images are 28x28 pixels, and have one color channel
+  # Celeb images are 28x28 pixels, and have one color channel
   input_layer = tf.reshape(features["x"], [-1, 28, 28, 1])
 
   # Convolutional Layer #1
@@ -184,7 +184,6 @@ def cnn_model_fn(features, labels, mode):
   return tf.estimator.EstimatorSpec(mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
 # Load training and eval data
-# mnist = tf.contrib.learn.datasets.load_dataset("mnist")
 train_data = np.asarray(trains_images, dtype=np.float32)  # Returns np.array
 train_labels = train_images_labels
 eval_data = np.asarray(val_images, dtype=np.float32)  # Returns np.array  # Returns np.array
@@ -193,7 +192,7 @@ test_data = np.asarray(test_images, dtype=np.float32)  # Returns np.array  # Ret
 test_labels = test_images_labels
 
 # Create the Estimator
-mnist_classifier = tf.estimator.Estimator(
+celeb_classifier = tf.estimator.Estimator(
   model_fn=cnn_model_fn, model_dir="tfcache/celeb_convnet_model")
 
 # Set up logging for predictions
@@ -207,12 +206,11 @@ train_input_fn = tf.estimator.inputs.numpy_input_fn(
   x={"x": train_data},
   y=train_labels,
   batch_size=100,
-  num_epochs=3,
+  num_epochs=None,
   shuffle=True)
-mnist_classifier.train(
+celeb_classifier.train(
   input_fn=train_input_fn,
-  steps=300,
-  hooks=[logging_hook])
+  steps=2000)
 
 # Evaluate the validation set and print results
 eval_input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -220,16 +218,16 @@ eval_input_fn = tf.estimator.inputs.numpy_input_fn(
   y=eval_labels,
   num_epochs=1,
   shuffle=False)
-eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
+eval_results = celeb_classifier.evaluate(input_fn=eval_input_fn)
 print(eval_results)
 
-# Evaluate the validation set and print results
+# Evaluate the Test set and print results
 test_input_fn = tf.estimator.inputs.numpy_input_fn(
   x={"x": test_data},
   y=test_labels,
   num_epochs=1,
   shuffle=False)
-test_results = mnist_classifier.evaluate(input_fn=test_input_fn)
+test_results = celeb_classifier.evaluate(input_fn=test_input_fn)
 print(test_results)
 
 
