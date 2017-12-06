@@ -1,3 +1,4 @@
 data/
 data
 code/CelebA.npz
+code/*.npz
