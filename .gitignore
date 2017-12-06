@@ -3,3 +3,4 @@ data
 code/CelebA.npz
 code/*.npz
 code/__pycache__
+code/tfcache
