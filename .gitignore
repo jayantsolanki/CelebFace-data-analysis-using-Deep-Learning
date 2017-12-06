@@ -2,3 +2,4 @@ data/
 data
 code/CelebA.npz
 code/*.npz
+code/__pycache__
