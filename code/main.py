@@ -16,15 +16,17 @@ labelnames = np.zeros(41)
 filename = '../data/CelebA/Anno/list_attr_celeba.txt'
 imagepath = '../data/CelebA/Img/img_align_celeba/'
 celebData = 0
-(celebData, labels, imageNames) = dataloader(imagepath, filename)
+(celebData, labels, imageNames) = dataloader2(imagepath, filename)
+
+#(celebData, labels, imageNames) = dataloader(imagepath, filename)
 # celebData = celebData[0:100000,:,:,:]
-celebData = celebData[0:100000,:,:]
-labels = labels[0:100000,:]
-imageNames = imageNames[0:100000]
+# celebData = celebData[0:100000,:,:]
+# labels = labels[0:100000,:]
+# imageNames = imageNames[0:100000]
 print("Celebdata dimension is ", celebData.shape)
 print("labels dimension is ", labels.shape)
 print("imageNames dimension is ", imageNames.shape)
-
+#exit()
 # # view_image(normalized_X[9999,:,:], train_images_label[9999])
 # trains_images = celebData[0:20000,:,:,:]#getting the training sets
 # test_images = celebData[20000:25000,:,:,:]#getting the training sets
@@ -34,23 +36,39 @@ print("imageNames dimension is ", imageNames.shape)
 # test_images = test_images.reshape([5000,2475*3])
 
 # view_image(normalized_X[9999,:,:], train_images_label[9999])
-train_num = 50000
-test_num = 5000
+train_num = 56000
+val_num = 7000
+test_num = 7000
+
 trains_images = celebData[0:train_num,:,:]#getting the training sets
-test_images = celebData[train_num:train_num+test_num,:,:]#getting the training sets
 train_images_labels = labels[0:train_num,:]
-test_images_labels = labels[train_num:train_num+test_num,:]
-# trains_images = trains_images.reshape([20000,2475*3])#flattening the input array
-trains_images = trains_images.reshape([train_num,784])#flattening the input array
+
+val_images = celebData[train_num:train_num+val_num,:,:]#getting the validation sets
+val_images_labels = labels[train_num:train_num+val_num,:]
+
+test_images = celebData[train_num+val_num:train_num+val_num+test_num,:,:]#getting the training sets
+test_images_labels = labels[train_num+val_num:train_num+val_num+test_num,:]
+
+#flattening the input array
+# trains_images = trains_images.reshape([20000,2475*3])
+trains_images = trains_images.reshape([train_num,784])
+val_images = test_images.reshape([val_num,784])
 test_images = test_images.reshape([test_num,784])
 
-trains_images = preprocessing.scale(trains_images)#standardising the image data set with zero mean and unit standard deviation
+#standardizing the image data set with zero mean and unit standard deviation
+trains_images = preprocessing.scale(trains_images)
+val_images = preprocessing.scale(val_images)
 test_images = preprocessing.scale(test_images)
 
+#creating one-hot vectors for labels
 train_images_labels_mat = np.zeros((train_num, 2), dtype=np.uint8)
 train_images_labels_mat[np.arange(train_num), train_images_labels.T] = 1
 train_images_labels = train_images_labels_mat
 print(train_images_labels[51,:])
+
+val_images_labels_mat = np.zeros((val_num, 2), dtype=np.uint8)
+val_images_labels_mat[np.arange(val_num), val_images_labels.T] = 1
+val_images_labels = val_images_labels_mat
 
 test_images_labels_mat = np.zeros((test_num, 2), dtype=np.uint8)
 test_images_labels_mat[np.arange(test_num), test_images_labels.T] = 1
@@ -58,8 +76,11 @@ test_images_labels = test_images_labels_mat
 
 print("Train images shape: ", trains_images.shape)
 print("Train labels shape: ", train_images_labels.shape)
+print("Test images shape: ", val_images.shape)
+print("Test labels shape: ", val_images_labels.shape)
 print("Test images shape: ", test_images.shape)
 print("Test labels shape: ", test_images_labels.shape)
+
 #eyglasses at column 15+1
 #Extract data
 
@@ -104,9 +125,13 @@ with tf.Session() as sess:
 			train_step.run(feed_dict={x: trainData, actual_y: trainLabels, no_drop_prob: 0.5})
 		print("Epoch ",i)
 		
+	#Run on validation data
+	accuracy_val = accuracy.eval(feed_dict={x: val_images, actual_y: val_images_labels, no_drop_prob: 1.0})
+	print("CelebA validation accuracy: %.2f" %(accuracy_val*100))
+
 	#Run on test data
-	accuracy = accuracy.eval(feed_dict={x: test_images, actual_y: test_images_labels, no_drop_prob: 1.0})
-	print("CelebA test accuracy: %.2f" %(accuracy*100))
+	accuracy_test = accuracy.eval(feed_dict={x: test_images, actual_y: test_images_labels, no_drop_prob: 1.0})
+	print("CelebA test accuracy: %.2f" %(accuracy_test*100))
 
 # test = Image.open("../data/CelebA/Img/img_align_celeba/"+imageNames[52])
 # img_array = np.asarray(test)
