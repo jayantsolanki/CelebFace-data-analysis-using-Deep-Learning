@@ -187,6 +187,7 @@ def create_cnn_model(x, actual_y, no_drop_prob):
 	#Intialization of weights and bias
 	W1 = weight_init([5, 5, 1, 32])
 	bias1 = bias_init([32])
+	tf.summary.scalar('W1', W1)
 
 	#reshape data into 4d
 	x_4d = tf.reshape(x, [-1, 28, 28, 1])
@@ -201,6 +202,7 @@ def create_cnn_model(x, actual_y, no_drop_prob):
 	#Intialization of weights and bias
 	W2 = weight_init([5, 5, 32, 64])
 	bias2 = bias_init([64])
+	tf.summary.scalar('W2', W2)
 
 	#convolve the layer 1 output, add bias, apply relu activation function
 	conv2_output = tf.nn.relu(convolution(pool1_output, W2) + bias2)
@@ -212,6 +214,7 @@ def create_cnn_model(x, actual_y, no_drop_prob):
 	#Intialization of weights and bias
 	W_fc = weight_init([7*7*64, 1024])
 	bias_fc = bias_init([1024])
+	tf.summary.scalar('W_fc', W_fc)
 
 	#flatten the pool2 output, multiply it with weights, add bias and then apply relu function
 	pool2_flat = tf.reshape(pool2_output, [-1, 7*7*64])
@@ -227,3 +230,15 @@ def create_cnn_model(x, actual_y, no_drop_prob):
 	logit_output = tf.matmul(fc1_output_drop, W_logit) + bias_logit
 
 	return logit_output
+
+def variable_summaries(var):
+	"""Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
+	with tf.name_scope('summaries'):
+		mean = tf.reduce_mean(var)
+		tf.summary.scalar('mean', mean)
+		with tf.name_scope('stddev'):
+			stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
+		tf.summary.scalar('stddev', stddev)
+		tf.summary.scalar('max', tf.reduce_max(var))
+		tf.summary.scalar('min', tf.reduce_min(var))
+		tf.summary.histogram('histogram', var)
