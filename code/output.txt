@@ -1,0 +1,13 @@
+ For dropout 0.50
+32 64
+Training set accuracy {'accuracy': 0.93267858, 'loss': 0.16984062, 'global_step': 1000}
+validation set accuracy {'accuracy': 0.93339288, 'loss': 0.17521785, 'global_step': 1000}
+Test accuracy {'accuracy': 0.93142855, 'loss': 0.17155841, 'global_step': 1000}
+64 128
+Training set accuracy {'accuracy': 0.94003969, 'loss': 0.15690202, 'global_step': 1000}
+validation set accuracy {'accuracy': 0.93892854, 'loss': 0.16877748, 'global_step': 1000}
+Test accuracy {'accuracy': 0.93785715, 'loss': 0.1625112, 'global_step': 1000}
+128 256
+Training set accuracy {'accuracy': 0.93531746, 'loss': 0.18713054, 'global_step': 1000}
+validation set accuracy {'accuracy': 0.93464285, 'loss': 0.19151181, 'global_step': 1000}
+Test accuracy {'accuracy': 0.93321431, 'loss': 0.19136761, 'global_step': 1000}

@@ -1,8 +1,38 @@
-#CSE574 | Project 4
-#Description: TO implement a convolutional neural network to determine 
+# -*- coding: utf-8 -*-
+"""
+**************************************************************************
+*                  
+*                  ================================
+*  This software is intended to teach image processing concepts
+*	
+*  UBIT Name: swatishr, jayantso
+*  Person Number: 550246994, 0246821
+*  MODULE: Project-4
+*  Filename: main.py
+*  Date: Dec 6, 2017
+*  
+*  Author: Swati Nair, Jayant Solanki, CSE-574 Project-2, Department of Computer Science
+*  and Engineering, University at Buffalo.
+*  
+*  Software released under Creative Commons CC BY-NC-SA
+*
+*  For legal information refer to:
+*        http://creativecommons.org/licenses/by-nc-sa/4.0/legalcode 
+*     
+*
+*  This software is made available on an “AS IS WHERE IS BASIS”. 
+*  Licensee/end user indemnifies and will keep e-Yantra indemnified from
+*  any and all claim(s) that emanate from the use of the Software or 
+*  breach of the terms of this agreement.
+*  
+*
+**************************************************************************
+"""
+#Description: To implement a convolutional neural network to determine 
 #whether the person in a portrait image is wearing glasses or not
-#########################################################################
 
+#########################################################################
+#***********************Necessary libraries***************************#
 # import tensorflow as tf
 import PIL.ImageOps
 from PIL import Image
@@ -10,14 +40,16 @@ from sklearn import preprocessing
 import numpy as np
 from libs import *
 import tensorflow as tf
+
 tf.logging.set_verbosity(tf.logging.INFO)
 global dropOut
 global layer1Nodes
 global layer2Nodes
+############Path to the image and the labels file##################
 filename = '../data/CelebA/Anno/list_attr_celeba.txt'
 imagepath = '../data/CelebA/Img/img_align_celeba/'
 celebData = 0
-(celebData, labels, imageNames) = dataloader2(imagepath, filename)
+(celebData, labels, imageNames) = dataloader2(imagepath, filename)#load the 70000 dataset
 
 #(celebData, labels, imageNames) = dataloader(imagepath, filename)
 # celebData = celebData[0:100000,:,:,:]
@@ -27,7 +59,6 @@ celebData = 0
 # print("Celebdata dimension is ", celebData.shape)
 # print("labels dimension is ", labels.shape)
 # print("imageNames dimension is ", imageNames.shape)
-#exit()
 # # view_image(normalized_X[9999,:,:], train_images_label[9999])
 # trains_images = celebData[0:20000,:,:,:]#getting the training sets
 # test_images = celebData[20000:25000,:,:,:]#getting the training sets
@@ -37,6 +68,7 @@ celebData = 0
 # test_images = test_images.reshape([5000,2475*3])
 
 # view_image(normalized_X[9999,:,:], train_images_label[9999])
+#working on the 70000 dataset
 train_num = 50400 #80% of 70000
 val_num = 5600
 test_num = 14000
@@ -50,8 +82,7 @@ val_images_labels = labels[train_num:train_num+val_num,:]
 test_images = celebData[train_num+val_num:train_num+val_num+test_num,:,:]#getting the training sets
 test_images_labels = labels[train_num+val_num:train_num+val_num+test_num,:]
 
-#flattening the input array
-# trains_images = trains_images.reshape([20000,2475*3])
+#flattening the input array and reshaping the labels as per requirement of the tnesorflow algo
 trains_images = trains_images.reshape([train_num,784])
 val_images = val_images.reshape([val_num,784])
 test_images = test_images.reshape([test_num,784])
@@ -65,17 +96,17 @@ val_images = preprocessing.scale(val_images)
 test_images = preprocessing.scale(test_images)
 
 #creating one-hot vectors for labels
-train_images_labels_mat = np.zeros((train_num, 2), dtype=np.uint8)
-train_images_labels_mat[np.arange(train_num), train_images_labels.T] = 1
-# train_images_labels = train_images_labels_mat
-# print(train_images_labels[51,:])
+# train_images_labels_mat = np.zeros((train_num, 2), dtype=np.uint8)
+# train_images_labels_mat[np.arange(train_num), train_images_labels.T] = 1
+# # train_images_labels = train_images_labels_mat
+# # print(train_images_labels[51,:])
 
-val_images_labels_mat = np.zeros((val_num, 2), dtype=np.uint8)
-val_images_labels_mat[np.arange(val_num), val_images_labels.T] = 1
-# val_images_labels = val_images_labels_mat
+# val_images_labels_mat = np.zeros((val_num, 2), dtype=np.uint8)
+# val_images_labels_mat[np.arange(val_num), val_images_labels.T] = 1
+# # val_images.;/._labels = val_images_labels_mat
 
-test_images_labels_mat = np.zeros((test_num, 2), dtype=np.uint8)
-test_images_labels_mat[np.arange(test_num), test_images_labels.T] = 1
+# test_images_labels_mat = np.zeros((test_num, 2), dtype=np.uint8)
+# test_images_labels_mat[np.arange(test_num), test_images_labels.T] = 1
 # test_images_labels = test_images_labels_mat
 
 # print("Train images shape: ", trains_images.shape)
@@ -85,17 +116,22 @@ test_images_labels_mat[np.arange(test_num), test_images_labels.T] = 1
 # print("Test images shape: ", test_images.shape)
 # print("Test labels shape: ", test_images_labels.shape)
 
-#eyglasses at column 15+1
-#Extract data
 
+###########################################################
+#function for building the model of the CNN
+#function cnn_model_fn(features, labels, mode)
+#input : fearures are the 784 input features of each image, labels nd mode in which the CNN model is run
+#output : Estimator for the model
 def cnn_model_fn(features, labels, mode):
   """Model function for CNN."""
-  # Input Layer
-  # Reshape X to 4-D tensor: [batch_size, width, height, channels]
-  # Celeb images are 28x28 pixels, and have one color channel
-  global dropOut
+
+  global dropOut#globally declaring it be used as shared vairable
   global layer1Nodes
   global layer2Nodes
+
+  # Input Layer
+  # Celeb images are 28x28 pixels, and have one color channel
+  # Reshape X to 4-D tensor: [batch_size, width, height, channels]
   input_layer = tf.reshape(features["x"], [-1, 28, 28, 1])
 
   # Convolutional Layer #1
@@ -115,6 +151,7 @@ def cnn_model_fn(features, labels, mode):
   # Input Tensor Shape: [batch_size, 28, 28, 32]
   # Output Tensor Shape: [batch_size, 14, 14, 32]
   pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
+
 
   # Convolutional Layer #2
   # Computes 64 features using a 5x5 filter.
@@ -139,13 +176,14 @@ def cnn_model_fn(features, labels, mode):
   # Output Tensor Shape: [batch_size, 7 * 7 * 64]
   pool2_flat = tf.reshape(pool2, [-1, 7 * 7 * layer2Nodes])
 
+
   # Dense Layer
   # Densely connected layer with 1024 neurons
   # Input Tensor Shape: [batch_size, 7 * 7 * 64]
   # Output Tensor Shape: [batch_size, 1024]
   dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
 
-  # Add dropout operation; 0.6 probability that element will be kept
+  # Add dropout operation; 0.4 probability that element will be kept
   dropout = tf.layers.dropout(
       inputs=dense, rate=dropOut, training=mode == tf.estimator.ModeKeys.TRAIN)
 
@@ -164,6 +202,7 @@ def cnn_model_fn(features, labels, mode):
   if mode == tf.estimator.ModeKeys.PREDICT:
     return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
+
   # Calculate Loss (for both TRAIN and EVAL modes)
   # onehot_labels = labels
   # loss = tf.losses.softmax_cross_entropy(
@@ -175,7 +214,8 @@ def cnn_model_fn(features, labels, mode):
 
   # Configure the Training Op (for TRAIN mode)
   if mode == tf.estimator.ModeKeys.TRAIN:
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)
+  	# optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
     train_op = optimizer.minimize(
         loss=loss,
         global_step=tf.train.get_global_step())
@@ -187,20 +227,28 @@ def cnn_model_fn(features, labels, mode):
           labels=labels, predictions=predictions["classes"])}
   return tf.estimator.EstimatorSpec(mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
-def main(dropout, layer1nodes, layer2nodes):
+
+###########################################################
+#function for running CNN on the Celeb data
+#function main(dropout, layer1nodes, layer2nodes)
+#input : dropout value (default value: 0.4), layer1nodes is the number of units in first hidden layer (default: 32), layer2nodes: nodes in 2nd layer(default:64) 
+def main(dropout=0.4, layer1nodes=32, layer2nodes=64):
 	global dropOut
 	global layer1Nodes
 	global layer2Nodes
 	dropOut = dropout
 	layer1Nodes = layer1nodes
 	layer2Nodes = layer2nodes
+
+	#saving the trained model on this path
 	modelName = "tfc/tfcache/celeb_convnet_model"+str(dropOut)+str(layer1Nodes)+str(layer2Nodes)
+
 	# Load training and eval data
 	train_data = np.asarray(trains_images, dtype=np.float32)  # Returns np.array
 	train_labels = train_images_labels
-	eval_data = np.asarray(val_images, dtype=np.float32)  # Returns np.array  # Returns np.array
+	eval_data = np.asarray(val_images, dtype=np.float32)  # Returns np.array 
 	eval_labels = val_images_labels
-	test_data = np.asarray(test_images, dtype=np.float32)  # Returns np.array  # Returns np.array
+	test_data = np.asarray(test_images, dtype=np.float32)  # Returns np.array 
 	test_labels = test_images_labels
 
 	# Create the Estimator
@@ -211,7 +259,7 @@ def main(dropout, layer1nodes, layer2nodes):
 	# Log the values in the "Softmax" tensor with label "probabilities"
 	tensors_to_log = {"probabilities": "softmax_tensor"}
 	logging_hook = tf.train.LoggingTensorHook(
-	  tensors=tensors_to_log, every_n_iter=50)
+	  tensors=tensors_to_log, every_n_iter=1000)
 
 	# Train the model
 	train_input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -222,7 +270,16 @@ def main(dropout, layer1nodes, layer2nodes):
 	  shuffle=True)
 	celeb_classifier.train(
 	  input_fn=train_input_fn,
-	  steps=1)
+	  steps=1000)#epoch count
+
+	# Evaluate the training set and print results
+	Train_input_fn = tf.estimator.inputs.numpy_input_fn(
+	  x={"x": train_data},
+	  y=train_labels,
+	  num_epochs=1,
+	  shuffle=False)
+	train_results = celeb_classifier.evaluate(input_fn=Train_input_fn)
+	print("Training set accuracy" ,train_results)
 
 	# Evaluate the validation set and print results
 	eval_input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -231,7 +288,7 @@ def main(dropout, layer1nodes, layer2nodes):
 	  num_epochs=1,
 	  shuffle=False)
 	eval_results = celeb_classifier.evaluate(input_fn=eval_input_fn)
-	print(eval_results)
+	print("validation set accuracy" ,eval_results)
 
 	# Evaluate the Test set and print results
 	test_input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -240,71 +297,8 @@ def main(dropout, layer1nodes, layer2nodes):
 	  num_epochs=1,
 	  shuffle=False)
 	test_results = celeb_classifier.evaluate(input_fn=test_input_fn)
-	print(test_results)
+	print("Test accuracy" ,test_results)
 
 
-
-# for i in range(10):
-# 	for file in os.listdir("../proj3_images/Numerals/"+str(i)+"/"):
-
-
-
-#============================================================
-'''
-#CNN model
-#Create nodes for input images and target labels
-tf.set_random_seed(2103)
-x = tf.placeholder(tf.float32, shape = [None, 784]) 
-actual_y = tf.placeholder(tf.float32, shape = [None, 2]) 
-#dropout only during training to prevent overfitting, not during testing
-no_drop_prob = tf.placeholder(tf.float32)  #probability of not dropping out the neurons output
-
-logit_output = create_cnn_model(x, actual_y, no_drop_prob)
-
-#-------Cross entropy loss function------
-cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels = actual_y, logits = logit_output))
-
-#training using optimizers: AdamOptimizer
-train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-
-#gives a boolean vector for whether the actual and predicted output match (1 if true, 0 if false)
-right_prediction = tf.equal(tf.argmax(logit_output, 1), tf.argmax(actual_y, 1))
-
-#get accuracy
-accuracy = tf.reduce_mean(tf.cast(right_prediction, tf.float32))
-
-
-#train and evaluate the model
-with tf.Session() as sess:
-	sess.run(tf.global_variables_initializer())
-	# saver = tf.train.Saver()
-	for i in range(101):
-		data_batch, target_batch = tf.train.batch(dequeue_op, batch_size=15, capacity=40)
-		# for j in np.arange(0, train_num-2000, 2000):
-		# 	trainData = trains_images[j:j+2000,:]
-		# 	trainLabels = train_images_labels[j:j+2000,:]
-		# 	# print(i)
-		# 	if (i%10 == 0 and j == 0):
-		# 		train_accuracy = accuracy.eval(feed_dict={x: trainData, actual_y: trainLabels, no_drop_prob: 1.0})
-		# 		print("At step %d, training accuracy: %.2f" %(i, train_accuracy))
-		# 	train_step.run(feed_dict={x: trainData, actual_y: trainLabels, no_drop_prob: 0.5})
-
-		# print("Epoch ",i)
-		if(i%10==0):
-			# _, loss_value = sess.run([train_step, cross_entropy], feed_dict={x: trainData, actual_y: trainLabels})
-			print('At epoch %d, cross_entropy loss is %.2f' %(i+1,cross_entropy.eval(feed_dict={x: trainData, actual_y: trainLabels, no_drop_prob: 1.0})))
-		
-	#Run on validation data
-	accuracy_val = accuracy.eval(feed_dict={x: val_images, actual_y: val_images_labels, no_drop_prob: 1.0})
-	print("CelebA validation accuracy: %.2f" %(accuracy_val*100))
-
-	#Run on test data
-	accuracy_test = accuracy.eval(feed_dict={x: test_images, actual_y: test_images_labels, no_drop_prob: 1.0})
-	print("CelebA test accuracy: %.2f" %(accuracy_test*100))
-
-# test = Image.open("../data/CelebA/Img/img_align_celeba/"+imageNames[52])
-# img_array = np.asarray(test)
-# test.show()
-
-#"../../CelebA/Anno/list_attr_celeba.txt"
-'''
+if __name__ == "__main__":
+    main()

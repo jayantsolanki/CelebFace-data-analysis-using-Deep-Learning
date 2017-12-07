@@ -1,4 +1,4 @@
-#libs
+#helper functions to load data from celeb folder
 
 import PIL.ImageOps
 from PIL import Image
@@ -7,11 +7,16 @@ import numpy as np
 import tensorflow as tf
 import random
 
+###########################################################
+#function for loading data from celeb folder
+#function dataloader(imagespath,filename)
+#input : imagespath - Path where celeb images are stored, filename - file in which labels of the celeb dataset is stored
+#output : image_names, labels and image pixel data
 def dataloader(imagespath,filename):
 	count = 0;
 	length = 0
 	try:
-		data = np.load("CelebA.npz")
+		data = np.load("CelebA.npz") #if celebA.npz file exists. then load data directly from this file
 		labels = data['labels']
 		imageNames = data['imageNames']
 		imageData = data['imageData']
@@ -84,7 +89,11 @@ def dataloader(imagespath,filename):
 	# # imagespath = imagespath+imageNames[0]
 	return(imageData, labels, imageNames)
 
-
+#################################################################
+#function for loading data from celeb folder for 70K images with all eyeglasses images from 2L dataset
+#function dataloader(imagespath,filename)
+#input : imagespath - Path where celeb images are stored, filename - file in which labels of the celeb dataset is stored
+#output : image_names, labels and image pixel data
 def dataloader2(imagespath,filename):
 	try:
 		data = np.load("CelebA70K.npz")
@@ -97,6 +106,8 @@ def dataloader2(imagespath,filename):
 		eyeglass_images = []
 		non_eyeglass_labels = []
 		non_eyeglass_images = []
+
+		#get all 13193 eyeglasses images from 202599 celeb dataset
 		for line in open(filename): 
 			linenum = linenum+1
 			if(linenum==1):
@@ -114,6 +125,7 @@ def dataloader2(imagespath,filename):
 		eyeglass_length = len(eyeglass_images)
 		noneyeglass_length = 70000 - len(eyeglass_images)
 
+		#get non-eyeglass images
 		linenum = 0
 		for line in open(filename): 
 			linenum = linenum+1
@@ -132,12 +144,14 @@ def dataloader2(imagespath,filename):
 		print(len(non_eyeglass_labels))
 		print(len(non_eyeglass_images))
 
+		#concatenating all eyeglasses and non-eyeglass images and labels
 		all_labels = eyeglass_labels + non_eyeglass_labels
 		all_image_names = eyeglass_images + non_eyeglass_images
 
 		print(len(all_labels))
 		print(len(all_image_names))
 
+		#Random shuffling of data
 		temp = list(zip(all_labels, all_image_names))
 		random.shuffle(temp)
 		all_labels, all_image_names = zip(*temp)
@@ -148,8 +162,8 @@ def dataloader2(imagespath,filename):
 			imagesPath = imagespath+images#full image path
 			print(i, imagesPath)
 			image = Image.open(imagesPath)
-			image = image.convert('L')
-			image = image.resize((28, 28), Image.BICUBIC)
+			image = image.convert('L') #convert into grayscale
+			image = image.resize((28, 28), Image.BICUBIC) #resize into 28x28 dimension
 			img_array = np.asarray(image)
 			imageData[i,:,:] = img_array
 			i = i+1
@@ -163,82 +177,3 @@ def dataloader2(imagespath,filename):
 		print(imageData.shape)
 		np.savez("CelebA70K.npz", imageNames=all_image_names, labels=labels, imageData=imageData)
 	return(imageData, labels, all_image_names)	
-
-
-#Weight Variable initialization
-def weight_init(shape):
-	initial = tf.truncated_normal(shape, stddev=0.1)
-	return tf.Variable(initial)
-
-#Bias Variable initialization
-def bias_init(shape):
-	initial = tf.constant(0.1, shape=shape)
-	return tf.Variable(initial)
-
-#Function to convolve input with given weights, stride=1 and zero padding
-def convolution(x, W):
-	return tf.nn.conv2d(x, W, strides = [1, 1, 1, 1], padding = 'SAME')
-
-#Function for 2D max pooling
-def maxpool(x):
-	return tf.nn.max_pool(x, ksize = [1, 2, 2, 1], strides = [1, 2, 2, 1], padding = 'SAME')
-
-def create_cnn_model(x, actual_y, no_drop_prob):
-	#Intialization of weights and bias
-	W1 = weight_init([5, 5, 1, 32])
-	bias1 = bias_init([32])
-	tf.summary.scalar('W1', W1)
-
-	#reshape data into 4d
-	x_4d = tf.reshape(x, [-1, 28, 28, 1])
-
-	#convolve the image, add bias, apply relu activation function
-	conv1_output = tf.nn.relu(convolution(x_4d, W1) + bias1)
-	
-	#apply max pooling
-	pool1_output = maxpool(conv1_output)
-	
-	#-----------Convolution layer 2 with 64 features applied on 5x5 patch of image-----------
-	#Intialization of weights and bias
-	W2 = weight_init([5, 5, 32, 64])
-	bias2 = bias_init([64])
-	tf.summary.scalar('W2', W2)
-
-	#convolve the layer 1 output, add bias, apply relu activation function
-	conv2_output = tf.nn.relu(convolution(pool1_output, W2) + bias2)
-	
-	#apply max pooling
-	pool2_output = maxpool(conv2_output)
-	
-	#------------Fully Connected Layer with 1024 neurons--------------
-	#Intialization of weights and bias
-	W_fc = weight_init([7*7*64, 1024])
-	bias_fc = bias_init([1024])
-	tf.summary.scalar('W_fc', W_fc)
-
-	#flatten the pool2 output, multiply it with weights, add bias and then apply relu function
-	pool2_flat = tf.reshape(pool2_output, [-1, 7*7*64])
-
-	fc1_output = tf.nn.relu(tf.matmul(pool2_flat, W_fc) + bias_fc)
-
-	fc1_output_drop = tf.nn.dropout(fc1_output, no_drop_prob)
-	
-	#------------Logit Layer--------------
-	W_logit = weight_init([1024, 2])
-	bias_logit = bias_init([2])
-	
-	logit_output = tf.matmul(fc1_output_drop, W_logit) + bias_logit
-
-	return logit_output
-
-def variable_summaries(var):
-	"""Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
-	with tf.name_scope('summaries'):
-		mean = tf.reduce_mean(var)
-		tf.summary.scalar('mean', mean)
-		with tf.name_scope('stddev'):
-			stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
-		tf.summary.scalar('stddev', stddev)
-		tf.summary.scalar('max', tf.reduce_max(var))
-		tf.summary.scalar('min', tf.reduce_min(var))
-		tf.summary.histogram('histogram', var)
