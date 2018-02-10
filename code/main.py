@@ -21,7 +21,7 @@
 *     
 *
 *  This software is made available on an “AS IS WHERE IS BASIS”. 
-*  Licensee/end user indemnifies and will keep e-Yantra indemnified from
+*  Licensee/end user indemnifies and will keep above authors indemnified from
 *  any and all claim(s) that emanate from the use of the Software or 
 *  breach of the terms of this agreement.
 *  
