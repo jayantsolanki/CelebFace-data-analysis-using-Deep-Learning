@@ -1,11 +1,5 @@
-# Proj-4-Introduction-to-Deep-Learning-IntroToML-574
-Celebrity Image classification: Identifying celebrities who are wearing spectacles or not
-## Explanations goes here
-### Motivation
-### Approach
-### Results
+![University at Buffalo](http://www.nsm.buffalo.edu/Research/mcyulab//img/2-line_blue_gray.png)
 
-![University at Buffalo](https://commons.wikimedia.org/wiki/File:University_at_Buffalo_logo.png)
 ***
 # CelebFace data analysis using a Convolution Neural Network
 
@@ -14,22 +8,78 @@ Celebrity Image classification: Identifying celebrities who are wearing spectacl
 In this project we perfomed machine learning analysis using CNN the Celeb dataset which has more than 200k celebrity images in total. We determined whether the person in a portrait image is wearing glasses or not. By training our algorithm on the training sets and tuning hyperparameters and regularisation adjustment we achieved an accuracy of approximately 95% on
 the test images.
 
+## Approach
+### Data Extraction 
+* We extracted the entire celeb dataset (images and labels) by reading the
+and then for training the model, we chose different sizes of dataset.
+Initially, just for testing purpose, we used 1000 data samples for training,
+then we trained the model on 20K training samples, 70K samples and
+finally on 2L dataset. We partitioned the dataset into training, validation
+and test set.
+* Below steps were followed:
+ * Labels for eyeglasses were first extracted from the
+list_attr_celeba.txt (column 16th). Converted the -1s label to 0s
+depicting absence of glasses,1st depicted presence of glasses.
+ * Read the images from img_align_celeba folder and converted the
+RGB images into grayscale. This was done as we only have to
+determine eyeglasses and it can be achieved even with a grayscale
+image.
+ * Resized the image to a smaller dimension (tried 28x28 and 32x32)
+ * Saved the image names, image pixels data and labels corresponding
+to each data in an npz file on the disk.
+ * Standardized the image pixel values to be in a range of 0 to 1.
+ * Flattened each image into 1D array
+ * Also, we tried a different variant of data extraction for 70K data samples.
+ * In this, all the 202599 labels were read and the ones having
+eyeglasses were extracted.
+ * The total count of such images was 13193.
+ * Then, we extracted 56807 non-eyeglass images and
+combined both the sets, shuffled the data and created a new
+dataset of size 70K.
+ * This was done because the ratio of eyeglass images to
+non-eyeglass images is too low in the current celeb dataset.
+So, in order to train the model effectively, we needed a good
+proportion of eyeglasses images in the dataset. This data
+extraction method helped us to achieve it.
+### Preprocessing
+* **Extracted feature values and labels from the data** Since extracting the
+features in original resolution severely clogged the system’s RAM, we
+downsampled the images.
+* **Reduced the resolution of the original images** We worked with images resized
+to dimension, 28x28
+* **Reduced the size of training set** Initially according to the the mentioned paper
+we took 20000 training sets.
+* **Performed Data Partition** We partitioned the dataset into training, validation and test sets
+after shuffling the data
+* **Applied dropout or other regularization methods** We experimented with
+different dropout values, Details have been provided in the table in
+Hyperparameters tuning section.
+* **Trained model parameter** We used SGD and AdamOptimizer with mini batches.
+AdamOptimizer was found to be much faster and achieved the higher accuracy in
+lower number of epochs
+* **Tuned hyper-parameters** We used the automate.py script to create the grid map
+for different values of the dropout and hidden layers and hidden nodes.
+* **Retrained the model using higher resolutions** We used 32x32 image resolution.
+The performance improved as we increased the resolution
+* **Used bigger sizes of the training set** We augmented the training set to 50K, 70K
+and original dataset count.
+
 ## Results
-Sr.No | Resolution | Dropout-rate | Number of Convolutional Layers | Number of nodes | Train Accuracy | Validation Accuracy Test Accuracy
-Trained using SGD (Epoch 10000)
-1 28x28 0.3 2 32, 64 0.90134919 0.89892858 0.90742856
-2 28x28 0.3 2 64, 128 0.89954364 0.89910716 0.90721428
-3 28x28 0.3 2 128, 256 0.90037698 0.89928573 0.9069286
-4 28x28 0.4 2 32, 64 0.89515871 0.89285713 0.90135711
-Trained using AdamOptimiser (Epoch 1000)
-5 28x28 0.4 2 32, 64 0.94714284 0.94410712 0.94035715
-6 28x28 0.4 2 64, 128 0.93579364 0.93410712 0.93457144
-4  
-Project 4, CSE-574 Jayant Solanki, Swati Nair
-7 28x28 0.4 2 128, 256 0.92555553 0.92214286 0.92307144
-8 28x28 0.5 2 32, 64 0.93267858 0.93339288 0.93142855
-9 28x28 0.5 2 64, 128 0.94003969 0.93892854 0.93785715
-10 28x28 0.5 2 128, 256 0.93531746 0.93464285 0.93321431
+<table>
+  <thead><tr><th>Sr. No</th><th>Resolution</th><th>Dropout rate</th><th>Number of Convolutional Layers</th><th>Number of nodes</th><th>Train Accuracy</th><th>Validation Accuracy</th><th>Test Accuracy</th></tr></thead><tbody>
+  <tr><td align="center" colspan="8"><b>Trained using SGD (Epoch 10000)</b></td></tr>
+   <tr><td>1</td><td>28x28</td><td>0.3</td><td>2</td><td>32, 64</td><td>0.90134919</td><td>0.89892858</td><td>0.90742856</td></tr>
+   <tr><td>2</td><td>28x28</td><td>0.3</td><td>2</td><td>64, 128</td><td>0.89954364</td><td>0.89910716</td><td>0.90721428</td></tr>
+   <tr><td>3</td><td>28x28</td><td>0.3</td><td>2</td><td>128, 256</td><td>0.90037698</td><td>0.89928573</td><td>0.9069286</td></tr>
+   <tr><td>4</td><td>28x28</td><td>0.4</td><td>2</td><td>32, 64</td><td>0.89515871</td><td>0.89285713</td><td>0.90135711</td></tr>
+   <tr><td align="center" colspan="8"><b>Trained using AdamOptimiser (Epoch 1000)</b></td></tr>
+   <tr><td>5</td><td>28x28</td><td>0.4</td><td>2</td><td>32, 64</td><td>0.94714284</td><td>0.94410712</td><td><span style="color:green"><b>0.94035715</b></span</td></tr>
+   <tr><td>6</td><td>28x28</td><td>0.4</td><td>2</td><td>64, 128</td><td>0.93579364</td><td>0.93410712</td><td>0.93457144</td></tr>
+   <tr><td>7</td><td>28x28</td><td>0.4</td><td>2</td><td>128, 256</td><td>0.92555553</td><td>0.92214286</td><td>0.92307144</td></tr>
+   <tr><td>8</td><td>28x28</td><td>0.5</td><td>2</td><td>32, 64</td><td>0.93267858</td><td>0.93339288</td><td>0.93142855</td></tr>
+   <tr><td>9</td><td>28x28</td><td>0.5</td><td>2</td><td>64, 128</td><td>0.94003969</td><td>0.93892854</td><td>0.93785715</td></tr>
+   <tr><td>10</td><td>28x28</td><td>0.5</td><td>2</td><td>128, 256</td><td>0.93531746</td><td>0.93464285</td><td>0.93321431</td></tr>
+</tbody></table>
 
 ## Documentation
 ***
@@ -44,7 +94,7 @@ Report and documentation can be found on this [Documentation](https://github.com
 ## Contributors
 ***
   * [Jayant Solanki](https://github.com/jayantsolanki)
-  * [Swati S. Nair](https://github.com/swaitshr)
+  * [Swati S. Nair](https://github.com/swatishr)
   
 ## Instructor
 ***
