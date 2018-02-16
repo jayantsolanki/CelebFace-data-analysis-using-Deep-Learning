@@ -89,17 +89,17 @@ and original dataset count.
 <table>
   <thead><tr><th>Sr. No</th><th>Resolution</th><th>Dropout rate</th><th>Number of Convolutional Layers</th><th>Number of nodes</th><th>Train Accuracy</th><th>Validation Accuracy</th><th>Test Accuracy</th></tr></thead><tbody>
   <tr><td align="center" colspan="8"><b>Trained using SGD (Epoch 10000)</b></td></tr>
-   <tr><td>1</td><td>28x28</td><td>0.3</td><td>2</td><td>32, 64</td><td>0.90134919</td><td>0.89892858</td><td>0.90742856</td></tr>
-   <tr><td>2</td><td>28x28</td><td>0.3</td><td>2</td><td>64, 128</td><td>0.89954364</td><td>0.89910716</td><td>0.90721428</td></tr>
-   <tr><td>3</td><td>28x28</td><td>0.3</td><td>2</td><td>128, 256</td><td>0.90037698</td><td>0.89928573</td><td>0.9069286</td></tr>
-   <tr><td>4</td><td>28x28</td><td>0.4</td><td>2</td><td>32, 64</td><td>0.89515871</td><td>0.89285713</td><td>0.90135711</td></tr>
+   <tr><td>1</td><td>28x28</td><td>0.3</td><td align="center" >2</td><td>32, 64</td><td>0.90134919</td><td>0.89892858</td><td>0.90742856</td></tr>
+   <tr><td>2</td><td>28x28</td><td>0.3</td><td align="center" >2</td><td>64, 128</td><td>0.89954364</td><td>0.89910716</td><td>0.90721428</td></tr>
+   <tr><td>3</td><td>28x28</td><td>0.3</td><td align="center" >2</td><td>128, 256</td><td>0.90037698</td><td>0.89928573</td><td>0.9069286</td></tr>
+   <tr><td>4</td><td>28x28</td><td>0.4</td><td align="center" >2</td><td>32, 64</td><td>0.89515871</td><td>0.89285713</td><td>0.90135711</td></tr>
    <tr><td align="center" colspan="8"><b>Trained using AdamOptimiser (Epoch 1000)</b></td></tr>
-   <tr><td>5</td><td>28x28</td><td>0.4</td><td>2</td><td>32, 64</td><td>0.94714284</td><td>0.94410712</td><td><span style="color:green"><b>0.94035715</b></span</td></tr>
-   <tr><td>6</td><td>28x28</td><td>0.4</td><td>2</td><td>64, 128</td><td>0.93579364</td><td>0.93410712</td><td>0.93457144</td></tr>
-   <tr><td>7</td><td>28x28</td><td>0.4</td><td>2</td><td>128, 256</td><td>0.92555553</td><td>0.92214286</td><td>0.92307144</td></tr>
-   <tr><td>8</td><td>28x28</td><td>0.5</td><td>2</td><td>32, 64</td><td>0.93267858</td><td>0.93339288</td><td>0.93142855</td></tr>
-   <tr><td>9</td><td>28x28</td><td>0.5</td><td>2</td><td>64, 128</td><td>0.94003969</td><td>0.93892854</td><td>0.93785715</td></tr>
-   <tr><td>10</td><td>28x28</td><td>0.5</td><td>2</td><td>128, 256</td><td>0.93531746</td><td>0.93464285</td><td>0.93321431</td></tr>
+   <tr><td>5</td><td>28x28</td><td>0.4</td><td align="center" >2</td><td>32, 64</td><td>0.94714284</td><td>0.94410712</td><td><span style="color:green"><b>0.94035715</b></span</td></tr>
+   <tr><td>6</td><td>28x28</td><td>0.4</td><td align="center" >2</td><td>64, 128</td><td>0.93579364</td><td>0.93410712</td><td>0.93457144</td></tr>
+   <tr><td>7</td><td>28x28</td><td>0.4</td><td align="center" >2</td><td>128, 256</td><td>0.92555553</td><td>0.92214286</td><td>0.92307144</td></tr>
+   <tr><td>8</td><td>28x28</td><td>0.5</td><td align="center" >2</td><td>32, 64</td><td>0.93267858</td><td>0.93339288</td><td>0.93142855</td></tr>
+   <tr><td>9</td><td>28x28</td><td>0.5</td><td align="center" >2</td><td>64, 128</td><td>0.94003969</td><td>0.93892854</td><td>0.93785715</td></tr>
+   <tr><td>10</td><td>28x28</td><td>0.5</td><td align="center" >2</td><td>128, 256</td><td>0.93531746</td><td>0.93464285</td><td>0.93321431</td></tr>
 </tbody></table>
 
 ## Documentation
