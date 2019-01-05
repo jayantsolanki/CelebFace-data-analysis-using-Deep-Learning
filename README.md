@@ -112,11 +112,6 @@ Report and documentation can be found on this [Documentation](https://github.com
 * [**code**](https://github.com/jayantsolanki/Proj-4-Introduction-to-Deep-Learning-IntroToML-574/tree/master/code)  contains the source code of our machine learning algorithm
 * [**output**](https://github.com/jayantsolanki/Proj-4-Introduction-to-Deep-Learning-IntroToML-574/tree/master/proj4code) contains the console output of the analysis performed on the images
 
-## Contributors
-***
-  * [Jayant Solanki](https://github.com/jayantsolanki)
-  * [Swati S. Nair](https://github.com/swatishr)
-  
 ## Instructor
 ***
   * **Prof. Sargur N. Srihari**
